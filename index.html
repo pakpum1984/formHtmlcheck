@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML form to Google Sheet</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 id="msg" class="text-center text-2xl font-bold mb-6 text-gray-800"></h1>
+        <form>
+            <div class="mb-4">
+                <input type="text" name="name" placeholder="Name" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-6">
+                <input type="tel" name="phone" placeholder="Phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-center">
+                <input type="submit" id="sub" value="Submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            </div>
+        </form>
+    </div>
+    <script>
+        let form = document.querySelector("form");
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // แสดง SweetAlert2: กำลังบันทึกข้อมูล
+            Swal.fire({
+                position: 'center',
+                title: '<h4>กำลังบันทึกข้อมูล...</h4>',
+                showConfirmButton: false,
+            });
+            Swal.showLoading();
+
+            document.querySelector("#sub").value = "Submitting..";
+            let data = new FormData(form);
+
+            // ส่งข้อมูลไปยัง Google Apps Script
+            fetch('https://script.google.com/macros/s/AKfycbyzkFWvJ7lQnXIIIRwVT8UV17xdSNhhKX5JCXe40Pe2ajZqO0NgcWdgp7ukIHCKP8Sq/exec', {
+                method: "POST",
+                body: data
+            })
+            .then(res => res.text())  // แปลงผลลัพธ์จาก Response เป็นข้อความ
+            .then(data => {
+                // แสดงผลลัพธ์จากการส่งข้อมูล
+                document.querySelector("#msg").innerHTML = data;
+
+                // แสดง SweetAlert2: บันทึกข้อมูลสำเร็จ
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: '<h4>บันทึกข้อมูลสำเร็จ</h4>',
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+
+                document.querySelector("#sub").value = "Submit";
+            })
+            .catch(error => {
+                // แสดงข้อผิดพลาดหากเกิดปัญหากับการเชื่อมต่อ
+                Swal.fire({
+                    position: 'center',
+                    icon: 'error',
+                    title: '<h4>เกิดข้อผิดพลาดในการเชื่อมต่อ</h4>',
+                    showConfirmButton: true,
+                });
+                document.querySelector("#sub").value = "Submit";
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>
