@@ -114,7 +114,7 @@
      <div class="container">
       <div class="card" id="cardadmin">
     
-      <h4> <i class="fa-solid fa-address-book me-2"></i>check555แบบฟอร์มบันทึกข้อมูล</h4>
+      <h4> <i class="fa-solid fa-address-book me-2"></i>checkแบบฟอร์มบันทึกข้อมูล999999</h4>
       <br>
       <form id="bookmyFormadmin" method="POST" onsubmit="booksubmitFormadmin(event); return false;" class="row g-2">
 
@@ -149,7 +149,7 @@
         </div>
 
 
-
+<input type="hidden" name="referer" id="referer">
 
         <div class="d-flex justify-content-center mt-4">
           <button type="submit" class="btn bg-primary col-12 text-white"><i
@@ -171,7 +171,9 @@
     
       
       
-//           var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwD6v_RFOnqv5b0UiTSCSuoO2sKkzr1Kq6lwQlNIlVerbkOFzPlHv1JMjksxJI1koIK/exec';
+  window.onload = function() {
+        document.getElementById('referer').value = window.location.hostname;
+    };
 
 function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
@@ -180,6 +182,8 @@ function validateEmail(email) {
 
 function booksubmitFormadmin(event) {
     event.preventDefault();
+
+    // ดำเนินการบันทึกข้อมูล (ตามเดิม)
     Swal.fire({
         position: 'center',
         title: '<h4>กำลังบันทึกข้อมูล...</h4>',
@@ -187,12 +191,15 @@ function booksubmitFormadmin(event) {
     });
     Swal.showLoading();
 
+    // ดึงค่าจากฟอร์ม
     var namebookadmin = document.getElementById('namebookadmin').value;
     var namedepadmin = document.getElementById('namedepadmin').value;
     var nameageadmin = document.getElementById('nameageadmin').value;
     var nameteladmin = document.getElementById('nameteladmin').value;
     var nameemailadmin = document.getElementById('nameemailadmin').value;
+    var referer = document.querySelector('input[name="referer"]').value;
 
+    // ตรวจสอบว่าข้อมูลครบถ้วนหรือไม่
     if (!namebookadmin || !namedepadmin || !nameageadmin || !nameteladmin || !nameemailadmin) {
         Swal.fire({
             position: 'center',
@@ -203,6 +210,7 @@ function booksubmitFormadmin(event) {
         return;
     }
 
+    // ตรวจสอบรูปแบบอีเมล์
     if (!validateEmail(nameemailadmin)) {
         Swal.fire({
             position: 'center',
@@ -213,6 +221,7 @@ function booksubmitFormadmin(event) {
         return;
     }
 
+    // สร้างข้อมูลฟอร์ม
     var formData = new URLSearchParams();
     formData.append('action', 'submitFormadmin');
     formData.append('namebookadmin', namebookadmin);
@@ -220,9 +229,12 @@ function booksubmitFormadmin(event) {
     formData.append('nameageadmin', nameageadmin);
     formData.append('nameteladmin', nameteladmin);
     formData.append('nameemailadmin', nameemailadmin);
+    formData.append('referer', referer);
 
-    var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwD6v_RFOnqv5b0UiTSCSuoO2sKkzr1Kq6lwQlNIlVerbkOFzPlHv1JMjksxJI1koIK/exec';
+    // URL ของ Google Apps Script
+    var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwpagvvqbA2z2su3tlc1yqEA-9IvUqJe-eNz6OJBsEzqIHx-XGxWFJUIUwrEARJj5HF/exec';
 
+    // ส่งข้อมูลไปยัง Google Apps Script
     fetch(googleScriptUrl, {
         method: 'POST',
         headers: {
