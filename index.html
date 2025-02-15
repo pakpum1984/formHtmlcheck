@@ -114,7 +114,7 @@
      <div class="container">
       <div class="card" id="cardadmin">
     
-      <h4> <i class="fa-solid fa-address-book me-2"></i>checkแบบฟอร์มบันทึกข้อมูล999999</h4>
+      <h4> <i class="fa-solid fa-address-book me-2"></i>11checkแบบฟอร์มบันทึกข้อมูล</h4>
       <br>
       <form id="bookmyFormadmin" method="POST" onsubmit="booksubmitFormadmin(event); return false;" class="row g-2">
 
@@ -235,16 +235,26 @@ function booksubmitFormadmin(event) {
     var googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwpagvvqbA2z2su3tlc1yqEA-9IvUqJe-eNz6OJBsEzqIHx-XGxWFJUIUwrEARJj5HF/exec';
 
     // ส่งข้อมูลไปยัง Google Apps Script
-    fetch(googleScriptUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: formData.toString()
-    })
-    .then(response => response.text())
-    .then(data => {
-        console.log(data);
+fetch(googleScriptUrl, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: formData.toString()
+})
+.then(response => response.text())
+.then(data => {
+    console.log(data);
+    // ถ้า data คือ Unauthorized Request ให้แสดงการแจ้งเตือนที่เหมาะสม
+    if (data.includes("Unauthorized Request: Invalid Referer")) {
+        Swal.fire({
+            position: 'center',
+            icon: 'error',
+            title: '<h4>Unauthorized Request: Invalid Referer</h4>',
+            confirmButtonText: 'OK',
+        });
+    } else {
+        // ข้อมูลถูกส่งสำเร็จ
         Swal.fire({
             position: 'center',
             icon: 'success',
@@ -255,16 +265,18 @@ function booksubmitFormadmin(event) {
 
         // ล้างค่าในฟอร์ม
         document.getElementById("bookmyFormadmin").reset();
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: '<h4>เกิดข้อผิดพลาด</h4>',
-            confirmButtonText: 'OK',
-        });
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: '<h4>เกิดข้อผิดพลาด</h4>',
+        confirmButtonText: 'OK',
     });
+});
+
 }
     </script>
   
